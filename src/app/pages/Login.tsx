@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import { cn } from "@/lib/utils";
 
 interface LoginProps {
-  onLoginSuccess: () => void;
+  onLoginSuccess: (email: string) => void;
 }
 
 export function Login({ onLoginSuccess }: LoginProps) {
@@ -27,7 +27,7 @@ export function Login({ onLoginSuccess }: LoginProps) {
   const [showPassword, setShowPassword] = useState(false);
   
   const [formData, setFormData] = useState({
-    email: "demo@smartlead.corp",
+    email: "employee@smartlead.corp",
     password: ""
   });
 
@@ -42,12 +42,11 @@ export function Login({ onLoginSuccess }: LoginProps) {
       if (formData.password === "error") {
         setError("Неверный логин или пароль. Повторите попытку.");
         setIsLoading(false);
-        // Shake effect could be added here via class
       } else {
         // Positive Scenario
         setSuccess(true);
         setTimeout(() => {
-          onLoginSuccess();
+          onLoginSuccess(formData.email);
         }, 800);
       }
     }, 1500);
@@ -159,9 +158,15 @@ export function Login({ onLoginSuccess }: LoginProps) {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 border-t border-slate-100 pt-6 text-center text-sm text-slate-500">
-            <div>
+            <div className="space-y-2">
                 <p>Для демонстрации ошибки введите пароль: <code className="bg-slate-100 px-1 py-0.5 rounded text-slate-700 font-mono text-xs">error</code></p>
-                <p className="mt-1">Для успешного входа: любой другой пароль</p>
+                <div className="text-xs text-left bg-slate-50 p-3 rounded border border-slate-100 space-y-1">
+                    <p className="font-semibold text-slate-700">Тестовые аккаунты:</p>
+                    <p>👨‍💼 <code className="text-blue-600">employee@smartlead.corp</code> (Сотрудник)</p>
+                    <p>👔 <code className="text-blue-600">director@smartlead.corp</code> (Директор)</p>
+                    <p>👥 <code className="text-blue-600">hr@smartlead.corp</code> (HR)</p>
+                    <p>💰 <code className="text-blue-600">accountant@smartlead.corp</code> (Бухгалтер)</p>
+                </div>
             </div>
             <p className="text-xs text-slate-400">
                 &copy; 2026 SmartLead Corp. System v2.4

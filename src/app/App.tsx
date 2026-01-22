@@ -14,29 +14,50 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentView, setCurrentView] = useState<View>("employee");
   const [selectedMonth, setSelectedMonth] = useState("Январь 2026");
+  const [userEmail, setUserEmail] = useState<string>("");
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    setCurrentView("employee"); // Reset view on logout
+    setCurrentView("employee"); 
+    setUserEmail("");
   };
 
+  const handleLoginSuccess = (email: string) => {
+    setUserEmail(email);
+    setIsAuthenticated(true);
+  };
+
+  const getAllowedViews = (email: string): View[] => {
+    if (email.includes("director")) {
+        return ["employee", "manager", "accountant", "hr", "settings"];
+    }
+    if (email.includes("hr")) {
+        return ["employee", "hr", "settings"];
+    }
+    if (email.includes("accountant")) {
+        return ["employee", "accountant", "settings"];
+    }
+    // Default employee
+    return ["employee", "settings"];
+  };
+
+  const allowedViews = getAllowedViews(userEmail);
+
   if (!isAuthenticated) {
-    return <Login onLoginSuccess={() => setIsAuthenticated(true)} />;
+    return <Login onLoginSuccess={handleLoginSuccess} />;
   }
 
+  // Keeping the existing logic for demo purposes, though in a real app this would come from the user profile
   const getUserInfo = (view: View) => {
-    switch (view) {
-      case "employee":
-        return { name: "Алексей Иванов", role: "Frontend Developer" };
-      case "manager":
-        return { name: "Сергей Петров", role: "Team Lead" };
-      case "accountant":
-        return { name: "Ирина Васильевна", role: "Главный бухгалтер" };
-      case "hr":
-        return { name: "Елена Козлова", role: "HR Manager" };
-      case "settings":
-        return { name: "Алексей Иванов", role: "Настройки профиля" };
-    }
+    // Override identity based on login if we wanted to, but keeping the "persona" switching for demo feel
+    // unless strictly required. 
+    // Let's actually make it consistent with the login to avoid confusion.
+    
+    if (userEmail.includes("director")) return { name: "Виктор Петрович", role: "Генеральный директор" };
+    if (userEmail.includes("hr")) return { name: "Елена Козлова", role: "HR Manager" };
+    if (userEmail.includes("accountant")) return { name: "Ирина Васильевна", role: "Главный бухгалтер" };
+    
+    return { name: "Алексей Иванов", role: "Frontend Developer" };
   };
 
   const { name, role } = getUserInfo(currentView);
@@ -47,6 +68,7 @@ export default function App() {
         currentView={currentView} 
         onViewChange={setCurrentView} 
         onLogout={handleLogout}
+        allowedViews={allowedViews}
       />
       
       <div className="flex flex-1 flex-col overflow-hidden">

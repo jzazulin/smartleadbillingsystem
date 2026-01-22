@@ -17,9 +17,10 @@ interface SidebarProps {
   currentView: View;
   onViewChange: (view: View) => void;
   onLogout: () => void;
+  allowedViews: View[];
 }
 
-export function Sidebar({ currentView, onViewChange, onLogout }: SidebarProps) {
+export function Sidebar({ currentView, onViewChange, onLogout, allowedViews }: SidebarProps) {
   const navItems = [
     {
       label: "Личный кабинет",
@@ -47,6 +48,9 @@ export function Sidebar({ currentView, onViewChange, onLogout }: SidebarProps) {
     }
   ];
 
+  const filteredNavItems = navItems.filter(item => allowedViews.includes(item.view));
+  const showSettings = allowedViews.includes("settings");
+
   return (
     <div className="flex h-screen w-64 flex-col border-r border-slate-200 bg-white">
       <div className="flex h-16 items-center px-6 border-b border-slate-100">
@@ -56,7 +60,7 @@ export function Sidebar({ currentView, onViewChange, onLogout }: SidebarProps) {
       
       <div className="flex-1 overflow-auto py-4">
         <nav className="space-y-1 px-3">
-          {navItems.map((item) => (
+          {filteredNavItems.map((item) => (
             <button
               key={item.view}
               onClick={() => onViewChange(item.view)}
@@ -78,25 +82,27 @@ export function Sidebar({ currentView, onViewChange, onLogout }: SidebarProps) {
           ))}
         </nav>
 
-        <div className="mt-8 px-3">
-          <p className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-            Система
-          </p>
-          <nav className="space-y-1">
-             <button 
-                onClick={() => onViewChange("settings")}
-                className={cn(
-                    "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                    currentView === "settings"
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                )}
-             >
-                <Settings className={cn("mr-3 h-5 w-5 flex-shrink-0", currentView === "settings" ? "text-blue-600" : "text-slate-400")} />
-                Настройки
-             </button>
-          </nav>
-        </div>
+        {showSettings && (
+            <div className="mt-8 px-3">
+            <p className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                Система
+            </p>
+            <nav className="space-y-1">
+                <button 
+                    onClick={() => onViewChange("settings")}
+                    className={cn(
+                        "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                        currentView === "settings"
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    )}
+                >
+                    <Settings className={cn("mr-3 h-5 w-5 flex-shrink-0", currentView === "settings" ? "text-blue-600" : "text-slate-400")} />
+                    Настройки
+                </button>
+            </nav>
+            </div>
+        )}
       </div>
 
       <div className="border-t border-slate-100 p-4">
